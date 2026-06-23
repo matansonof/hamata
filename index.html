@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>המטה</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#0A0608 0%,#1A0E18 40%,#0D1420 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif}
+::-webkit-scrollbar{display:none}
+@keyframes float1{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-15px,15px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}33%{transform:translate(-25px,20px)}66%{transform:translate(20px,-10px)}}
+@keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(15px,25px)}}
+@keyframes breathe{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(237,91,51,.5)}70%{box-shadow:0 0 0 12px rgba(237,91,51,0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes particle{0%{transform:translateY(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-120px);opacity:0}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes titleIn{from{opacity:0;letter-spacing:.4em;filter:blur(10px)}to{opacity:1;letter-spacing:-.01em;filter:blur(0)}}
+75%{transform:translateY(-18px) scale(.95)}88%{transform:translateY(0) scale(1.05)}100%{transform:translateY(0) scale(1)}}
+}
+@keyframes drawArc{from{stroke-dashoffset:var(--full)}to{stroke-dashoffset:var(--offset)}}
+@keyframes barRise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes modalUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+
+.phone{width:390px;height:844px;border-radius:52px;position:relative;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 0 0 10px #1A1614,0 0 0 11px rgba(255,255,255,.08),0 60px 120px rgba(0,0,0,.8),0 0 80px rgba(237,91,51,.15)}
+.blob{position:absolute;border-radius:50%;pointer-events:none}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px}
+.wm{position:absolute;top:5%;right:-10%;font-size:400px;font-weight:900;color:rgba(255,255,255,.025);pointer-events:none;line-height:1;z-index:1;animation:breathe 12s ease-in-out infinite}
+.screen{position:absolute;inset:0;overflow-y:auto;z-index:10;padding:54px 0 90px;-webkit-overflow-scrolling:touch;display:none}
+.screen.active{display:block;animation:fadeIn .3s ease}
+.glass{background:rgba(255,255,255,.08);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border:1px solid rgba(255,255,255,.18);border-radius:24px;position:relative;overflow:hidden;transition:all .3s ease}
+.glass::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent 50%,rgba(255,255,255,.05));pointer-events:none;border-radius:inherit}
+.glass:active{transform:scale(.97)}
+.glass-sm{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:16px;position:relative;overflow:hidden}
+.pulse-card{background:rgba(237,91,51,.22);backdrop-filter:blur(20px) saturate(2);-webkit-backdrop-filter:blur(20px) saturate(2);border:1px solid rgba(237,91,51,.4);border-radius:22px;animation:pulse 3s ease-in-out infinite;position:relative;overflow:hidden;cursor:pointer}
+.nav{position:absolute;bottom:0;left:0;right:0;height:86px;background:rgba(8,6,4,.7);backdrop-filter:blur(40px) saturate(2);-webkit-backdrop-filter:blur(40px) saturate(2);border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;padding:0 8px 20px;z-index:20}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;padding:8px 0;position:relative;-webkit-tap-highlight-color:transparent;transition:transform .2s}
+.nav-btn:active{transform:scale(.82)}
+.tag{font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);margin:10px 20px 14px}
+.loader-wrap{display:flex;align-items:center;justify-content:center;padding:50px}
+.loader-spin{width:26px;height:26px;border:3px solid rgba(237,91,51,.25);border-top-color:#ED5B33;border-radius:50%;animation:spin .7s linear infinite}
+.prog-seg{width:20px;height:3px;border-radius:2px}
+.tappable{cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.tappable:active{transform:scale(.97);opacity:.85}
+
+/* MODAL */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:50;display:none;align-items:flex-end}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal-sheet{width:100%;background:linear-gradient(180deg,#1A1020 0%,#0D0A14 100%);border-radius:28px 28px 0 0;border-top:1px solid rgba(255,255,255,.15);max-height:85%;overflow-y:auto;animation:modalUp .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:12px auto 0}
+.modal-close{position:absolute;top:16px;left:20px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:rgba(255,255,255,.6)}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);direction:rtl}
+.detail-row:last-child{border-bottom:none}
+
+#intro{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(135deg,#0A0608,#1A0E18)}
+#intro-apple{font-size:72px;animation:appleFall 1s .3s cubic-bezier(.34,1.56,.64,1) both}
+#intro-text{font-size:14px;color:rgba(255,255,255,.4);margin-top:16px;font-weight:500;animation:fadeIn .5s 1.2s both}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+
+
+<div class="blob" id="b1" style="width:280px;height:280px;top:5%;left:-5%;background:radial-gradient(circle,rgba(237,91,51,.6),rgba(237,91,51,.1) 60%,transparent 80%);filter:blur(40px);animation:float1 8s ease-in-out infinite"></div>
+<div class="blob" style="width:240px;height:240px;top:30%;right:-5%;background:radial-gradient(circle,rgba(120,60,200,.5),rgba(80,40,160,.1) 60%,transparent 80%);filter:blur(50px);animation:float2 10s ease-in-out infinite"></div>
+<div class="blob" style="width:200px;height:200px;bottom:20%;left:10%;background:radial-gradient(circle,rgba(59,114,247,.4),rgba(59,114,247,.08) 60%,transparent 80%);filter:blur(40px);animation:float3 7s ease-in-out infinite"></div>
+<div class="blob" id="b4" style="width:160px;height:160px;bottom:35%;right:10%;background:radial-gradient(circle,rgba(249,177,36,.35),transparent 70%);filter:blur(35px);animation:breathe 6s ease-in-out infinite"></div>
+<div class="grid-bg"></div>
+<div id="particles" style="position:absolute;inset:0;pointer-events:none;z-index:1"></div>
+<div class="wm" id="wm">מ</div>
+
+<div style="position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:30">
+  <span id="clock" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.7)"></span>
+  <div style="display:flex;gap:3px;align-items:flex-end">
+    <div style="width:3px;height:3px;background:rgba(255,255,255,.6);border-radius:1px"></div>
+    <div style="width:3px;height:4px;background:rgba(255,255,255,.6);border-radius:1px"></div>
+    <div style="width:3px;height:5px;background:rgba(255,255,255,.6);border-radius:1px"></div>
+    <div style="width:3px;height:6px;background:rgba(255,255,255,.6);border-radius:1px"></div>
+  </div>
+</div>
+<div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:35"></div>
+
+<!-- ████ HOME ████ -->
+<div class="screen active" id="s-home">
+  <div style="padding:16px 24px 20px;display:flex;justify-content:space-between;align-items:center;direction:rtl;animation:fadeUp .5s both">
+    <div style="width:42px;height:42px;background:linear-gradient(135deg,rgba(237,91,51,.3),rgba(237,91,51,.1));border:1px solid rgba(237,91,51,.5);border-radius:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);animation:pulse 3s ease-in-out infinite;position:relative">
+      <span style="color:white;font-weight:900;font-size:19px">מ</span>
+      <div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#ED5B33;box-shadow:0 0 8px #ED5B33;animation:blink 2s ease-in-out infinite"></div>
+    </div>
+    <div style="text-align:right">
+      <div id="greeting" style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:4px"></div>
+      <div style="font-size:36px;font-weight:900;line-height:1;background:linear-gradient(135deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titleIn .9s .2s both">המטה</div>
+    </div>
+  </div>
+  <div style="padding:0 20px;animation:fadeUp .5s .1s both">
+    <div class="pulse-card" style="padding:16px 20px;direction:rtl" onclick="goTo('docs')">
+      <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(237,91,51,.2);filter:blur(25px);pointer-events:none"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;position:relative">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(237,91,51,.2);border:1px solid rgba(237,91,51,.4);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);font-size:14px">←</div>
+        <div style="text-align:right">
+          <div id="h-pt" style="color:white;font-weight:700;font-size:14px">טוען...</div>
+          <div id="h-ps" style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:14px 20px 0;display:flex;gap:10px;animation:fadeUp .5s .15s both">
+    <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px;text-align:right;backdrop-filter:blur(12px);cursor:pointer" onclick="goTo('projects')">
+      <div id="hs-p" style="font-size:30px;font-weight:900;color:white;line-height:1">-</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">פרויקטים</div>
+    </div>
+    <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px;text-align:right;backdrop-filter:blur(12px);cursor:pointer" onclick="goTo('finance')">
+      <div id="hs-s" style="font-size:30px;font-weight:900;color:#F9B124;line-height:1">-</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">מנויים</div>
+    </div>
+    <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px;text-align:right;backdrop-filter:blur(12px);cursor:pointer" onclick="goTo('docs')">
+      <div id="hs-d" style="font-size:30px;font-weight:900;color:#ED5B33;line-height:1">-</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">מסמכים</div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0;direction:rtl">
+    <div style="font-size:9px;color:#ED5B33;cursor:pointer;border:1px solid rgba(237,91,51,.3);padding:3px 10px;border-radius:20px;background:rgba(237,91,51,.1)" onclick="goTo('projects')">הכל ←</div>
+    <span style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600">פרויקטים</span>
+  </div>
+  <div class="divider"></div>
+  <div id="h-projs" style="padding:0 20px"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px 0;direction:rtl">
+    <div style="font-size:9px;color:rgba(255,255,255,.3);cursor:pointer" onclick="goTo('finance')">הכל ←</div>
+    <span style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600">חיוב קרוב</span>
+  </div>
+  <div class="divider"></div>
+  <div id="h-bill" style="padding:0 20px 16px"></div>
+  <div style="padding:0 20px 10px;text-align:center">
+    <div id="heb-date" style="font-size:11px;color:rgba(255,255,255,.18);letter-spacing:.06em">כ״ג בסיוון תשפ״ו</div>
+  </div>
+</div>
+
+<!-- ████ PROJECTS ████ -->
+<div class="screen" id="s-projects">
+  <div style="padding:16px 24px 20px;display:flex;justify-content:space-between;align-items:center;direction:rtl;animation:fadeUp .4s both">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.7);font-size:16px" onclick="goTo('home')">→</div>
+    <div style="text-align:right">
+      <div style="font-size:28px;font-weight:800;color:white">פרויקטים</div>
+      <div id="pc" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px"></div>
+    </div>
+  </div>
+  <div id="p-list"></div>
+</div>
+
+<!-- ████ FINANCE ████ -->
+<div class="screen" id="s-finance">
+  <div style="padding:16px 24px 20px;display:flex;justify-content:space-between;align-items:center;direction:rtl;animation:fadeUp .4s both">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.7);font-size:16px" onclick="goTo('home')">→</div>
+    <div style="text-align:right">
+      <div style="font-size:28px;font-weight:800;color:white">כספים</div>
+      <div id="ft" style="font-size:11px;color:#F9B124;margin-top:2px"></div>
+    </div>
+  </div>
+  <div style="padding:0 20px 16px;animation:fadeUp .4s .1s both">
+    <div class="glass-sm" style="padding:20px;direction:rtl">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px">פילוח הוצאות חודשיות</div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <svg id="donut" width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0;transform:rotate(-90deg)"></svg>
+        <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+        <div id="f-ils" style="font-size:13px;color:rgba(255,255,255,.5)"></div>
+        <div id="f-usd" style="font-size:28px;font-weight:900;color:#F9B124;text-shadow:0 0 20px rgba(249,177,36,.4)"></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 20px 16px;animation:fadeUp .4s .2s both">
+    <div class="glass-sm" style="padding:16px">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:14px;text-align:right">ימים לחיוב הבא</div>
+      <div id="bar-chart" style="display:flex;align-items:flex-end;gap:6px;height:60px;direction:ltr"></div>
+      <div id="bar-labels" style="display:flex;gap:6px;margin-top:6px;direction:ltr"></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;padding:0 20px 10px;direction:rtl">
+    <span style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600">כל המנויים · לחץ לפרטים</span>
+  </div>
+  <div class="divider" style="margin-top:0"></div>
+  <div id="f-list"></div>
+</div>
+
+<!-- ████ DOCS ████ -->
+<div class="screen" id="s-docs">
+  <div style="padding:16px 24px 20px;display:flex;justify-content:space-between;align-items:center;direction:rtl;animation:fadeUp .4s both">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.7);font-size:16px" onclick="goTo('home')">→</div>
+    <div style="text-align:right">
+      <div style="font-size:28px;font-weight:800;color:white">מסמכים</div>
+      <div id="dc" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px"></div>
+    </div>
+  </div>
+  <div style="padding:0 20px 14px;display:flex;gap:8px;direction:rtl">
+    <div id="tf-all" onclick="fDocs('all')" style="font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;background:rgba(237,91,51,.2);color:#ED5B33;border:1px solid rgba(237,91,51,.4);cursor:pointer">הכל</div>
+    <div id="tf-flag" onclick="fDocs('flag')" style="font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);cursor:pointer">ממתינים</div>
+    <div id="tf-new" onclick="fDocs('new')" style="font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);cursor:pointer">חדשים</div>
+  </div>
+  <div id="d-timeline" style="padding:0 20px;position:relative"></div>
+</div>
+
+<!-- ████ NAV ████ -->
+<div class="nav">
+  <button class="nav-btn" onclick="goTo('home')" id="nb-home">
+    <div id="np-home" style="position:absolute;top:0;width:56px;height:30px;background:rgba(237,91,51,.2);border:1px solid rgba(237,91,51,.35);border-radius:15px;backdrop-filter:blur(8px);box-shadow:0 0 20px rgba(237,91,51,.3)"></div>
+    <span style="font-size:18px;position:relative;z-index:1;color:#ED5B33;filter:drop-shadow(0 0 6px rgba(237,91,51,.8))">⌂</span>
+    <span style="font-size:10px;position:relative;z-index:1;color:#ED5B33;font-weight:700">בית</span>
+  </button>
+  <button class="nav-btn" onclick="goTo('projects')" id="nb-projects">
+    <span style="font-size:18px;color:rgba(255,255,255,.4)">◫</span>
+    <span style="font-size:10px;color:rgba(255,255,255,.4)">פרויקטים</span>
+  </button>
+  <button class="nav-btn" onclick="goTo('finance')" id="nb-finance">
+    <span style="font-size:18px;color:rgba(255,255,255,.4)">◎</span>
+    <span style="font-size:10px;color:rgba(255,255,255,.4)">כספים</span>
+  </button>
+  <button class="nav-btn" onclick="goTo('docs')" id="nb-docs">
+    <span style="font-size:18px;color:rgba(255,255,255,.4)">◻</span>
+    <span style="font-size:10px;color:rgba(255,255,255,.4)">מסמכים</span>
+  </button>
+</div>
+<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:130px;height:4px;border-radius:2px;z-index:25;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)"></div>
+
+<!-- ████ MODALS ████ -->
+<div class="modal-overlay" id="modal-project" onclick="closeModal('project')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="position:relative;padding:20px 24px 32px" id="modal-project-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-sub" onclick="closeModal('sub')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="position:relative;padding:20px 24px 32px" id="modal-sub-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-doc" onclick="closeModal('doc')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="position:relative;padding:20px 24px 32px" id="modal-doc-content"></div>
+  </div>
+</div>
+
+</div><!-- /phone -->
+
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:absolute;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(30,30,40,.95);color:white;font-size:11px;padding:8px 16px;border-radius:20px;z-index:999;white-space:nowrap;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);font-family:Rubik,sans-serif';document.getElementById('phone').appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',3000);
+}
+<script>
+const SB='https://pzcrbqsrzbxwovrefxyk.supabase.co';
+const KEY='sb_publishable_k8_dRLSWclS9xrUeXjTmRA_nbtgOuDy';
+const CLR={accent:'#ED5B33',amber:'#F9B124',blue:'#3B72F7',green:'#1BA068',purple:'#9B6DFF',pink:'#FF6B9D'};
+const PAL=Object.values(CLR);
+const PROJ_ICON={'מספרפי':'✂️','המטה':'🏰','רבקה נקש':'🌱'};
+
+const LOGOS={
+  'ספוטיפיי':'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0iIzFEQjk1NCIvPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOCwxOCkgc2NhbGUoMC42NCkiIGZpbGw9IndoaXRlIj48dGl0bGU+U3BvdGlmeTwvdGl0bGU+PHBhdGggZD0iTTEyIDBDNS40IDAgMCA1LjQgMCAxMnM1LjQgMTIgMTIgMTIgMTItNS40IDEyLTEyUzE4LjY2IDAgMTIgMHptNS41MjEgMTcuMzRjLS4yNC4zNTktLjY2LjQ4LTEuMDIxLjI0LTIuODItMS43NC02LjM2LTIuMTAxLTEwLjU2MS0xLjE0MS0uNDE4LjEyMi0uNzc5LS4xNzktLjg5OS0uNTM5LS4xMi0uNDIxLjE4LS43OC41NC0uOSA0LjU2LTEuMDIxIDguNTItLjYgMTEuNjQgMS4zMi40Mi4xOC40NzkuNjU5LjMwMSAxLjAyem0xLjQ0LTMuM2MtLjMwMS40Mi0uODQxLjYtMS4yNjIuMy0zLjIzOS0xLjk4LTguMTU5LTIuNTgtMTEuOTM5LTEuMzgtLjQ3OS4xMi0xLjAyLS4xMi0xLjE0LS42LS4xMi0uNDguMTItMS4wMjEuNi0xLjE0MUM5LjYgOS45IDE1IDEwLjU2MSAxOC43MiAxMi44NGMuMzYxLjE4MS41NC43OC4yNDEgMS4yem0uMTItMy4zNkMxNS4yNCA4LjQgOC44MiA4LjE2IDUuMTYgOS4zMDFjLS42LjE3OS0xLjItLjE4MS0xLjM4LS43MjEtLjE4LS42MDEuMTgtMS4yLjcyLTEuMzgxIDQuMjYtMS4yNiAxMS4yOC0xLjAyIDE1LjcyMSAxLjYyMS41MzkuMy43MTkgMS4wMi40MTkgMS41Ni0uMjk5LjQyMS0xLjAyLjU5OS0xLjU1OS4zeiIvPjwvZz4KPC9zdmc+',
+  'מייק':'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjNkQwMENDIiByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+TWFrZTwvdGl0bGU+PHBhdGggZD0iTTEzLjM4IDMuNDk4Yy0uMjcgMC0uNTExLjE5LS41NjYuNDY1TDkuODUgMTguOTg2YS41NzguNTc4IDAgMCAwIC40NTMuNjc4bDQuMDk1LjgyNmEuNTguNTggMCAwIDAgLjY4Mi0uNDU1bDIuOTYzLTE1LjAyMWEuNTc4LjU3OCAwIDAgMC0uNDUzLS42NzhsLTQuMDk2LS44MjZhLjU4OS41ODkgMCAwIDAtLjExMy0uMDEyem0tNS44NzYuMDk4YS41NzYuNTc2IDAgMCAwLS41MTYuMzE4TC4wNjIgMTcuNjk3YS41NzUuNTc1IDAgMCAwIC4yNTYuNzc0bDMuNzMzIDEuODc3YS41NzguNTc4IDAgMCAwIC43NzUtLjI1OGw2LjkyNi0xMy43ODFhLjU3Ny41NzcgMCAwIDAtLjI1Ni0uNzc2TDcuNzYyIDMuNjU4YS41NzEuNTcxIDAgMCAwLS4yNTgtLjA2MnptMTEuNzQuMTE1YS41NzYuNTc2IDAgMCAwLS41NzYuNTc2djE1LjQyNmMwIC4zMTguMjU4LjU3OC41NzYuNTc4aDQuMTc4YS41OC41OCAwIDAgMCAuNTc4LS41NzhWNC4yODdhLjU3OC41NzggMCAwIDAtLjU3OC0uNTc2WiIvPjwvc3ZnPg==',
+  'סונו':'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0iIzAwMCIvPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNSwxNSkgc2NhbGUoMC43KSIgZmlsbD0id2hpdGUiPjx0aXRsZT5TdW5vPC90aXRsZT48cGF0aCBkPSJNMTYuNSAwQzIwLjY0MiAwIDI0IDUuMzczIDI0IDEyaC05YzAgNi42MjctMy4zNTggMTItNy41IDEyQzMuMzU4IDI0IDAgMTguNjI3IDAgMTJoOWMwLTYuNjI3IDMuMzU4LTEyIDcuNS0xMloiLz48L2c+Cjwvc3ZnPg==',
+  'קלוד':'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjQ0M3ODVDIiByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+QW50aHJvcGljPC90aXRsZT48cGF0aCBkPSJNMTcuMzA0MSAzLjU0MWgtMy42NzE4bDYuNjk2IDE2LjkxOEgyNFptLTEwLjYwODIgMEwwIDIwLjQ1OWgzLjc0NDJsMS4zNjkzLTMuNTUyN2g3LjAwNTJsMS4zNjkzIDMuNTUyOGgzLjc0NDJMMTAuNTM2MyAzLjU0MDlabS0uMzcxMiAxMC4yMjMyIDIuMjkxNC01Ljk0NTYgMi4yOTE0IDUuOTQ1NloiLz48L3N2Zz4=',
+  'בנדלאב פרו':'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRUUzMTI0IiByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+QmFuZExhYjwvdGl0bGU+PHBhdGggZD0ibTE5LjMyIDYuMDc2IDMuNTY3IDYuMTY0QTguODM1IDguODM1IDAgMCAxIDI0IDE2LjI1NUMyNCAyMC43NiAyMC40NTUgMjQgMTUuNDI1IDI0aC02Ljg1QzMuNTQ1IDI0IDAgMjAuNzYgMCAxNi4yNTVhOC45MjUgOC45MjUgMCAwIDEgMS4xMDItNC4wMTVsMy41NjctNi4xNjRoMy4zNDlMMy44NCAxMy4zNDJhNi4wMzMgNi4wMzMgMCAwIDAtLjgyOSAyLjg2OWMwIDIuODY5IDEuOTY0IDQuOTA5IDUuNjUxIDQuOTA5aDYuNjU0YzMuNzA5IDAgNS42NjItMi4wNCA1LjY2Mi00LjkwOWE2LjA0MyA2LjA0MyAwIDAgMC0uODI5LTIuODY5bC00LjE2Ny03LjI2NmgzLjMzOFptLTguNDQ0IDExLjUwOWMtMS41ODEgMC0yLjUzMS0uOTI3LTIuNTMxLTIuMjM2IDAtMS43ODkgMS44MjItMy4zNDkgMy44MTktMy43ODVMNy40NzMgMGg4LjE4MmwxLjUwNSAyLjg5MWgtNS43MjdsMy40MTQgOC4zNDVjLjI5NS42NTUuNDQ4IDEuMzY0LjQ0OCAyLjA3MyAwIDIuNDc2LTIuNDU1IDQuMjc2LTQuNDE5IDQuMjc2WiIvPjwvc3ZnPg==',
+  'מיקרוסופט':'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjQzIiBoZWlnaHQ9IjQzIiBmaWxsPSIjRjI1MDIyIi8+CjxyZWN0IHg9IjUyIiB5PSI1IiB3aWR0aD0iNDMiIGhlaWdodD0iNDMiIGZpbGw9IiM3RkJBMDAiLz4KPHJlY3QgeD0iNSIgeT0iNTIiIHdpZHRoPSI0MyIgaGVpZ2h0PSI0MyIgZmlsbD0iIzAwQTRFRiIvPgo8cmVjdCB4PSI1MiIgeT0iNTIiIHdpZHRoPSI0MyIgaGVpZ2h0PSI0MyIgZmlsbD0iI0ZGQjkwMCIvPgo8L3N2Zz4=',
+  'בזק':'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iI0ZGRkZGRiIvPgo8dGV4dCB4PSI1MCIgeT0iNzIiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxIZWx2ZXRpY2EgTmV1ZSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjcyIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMDA2NkNDIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTIiPkI8L3RleHQ+Cjwvc3ZnPg==',
+  'לובאבל':'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KPGRlZnM+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJsZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjRkY2QjZCIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iI0M4NTBDMCIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNDE1OEQwIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMEQwRDFBIi8+CjxwYXRoIGQ9Ik01MCA3OCBDNTAgNzggMTggNTYgMTggMzQgQzE4IDIyIDI3IDE0IDM4IDE4IEM0MyAyMCA0NyAyNCA1MCAyOSBDNTMgMjQgNTcgMjAgNjIgMTggQzczIDE0IDgyIDIyIDgyIDM0IEM4MiA1NiA1MCA3OCA1MCA3OFoiIGZpbGw9InVybCgjbGcpIi8+Cjwvc3ZnPg==',
+};
+function logoEl(name,color,size=32){
+  const src=LOGOS[name];
+  const r=Math.round(size/3);
+  const pad=Math.round(size*.1);
+  if(src)return`<div style="width:${size}px;height:${size}px;border-radius:${r}px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:${pad}px"><img src="${src}" style="width:100%;height:100%;object-fit:contain"></div>`;
+  const ds=Math.round(size*.32);
+  return`<div style="width:${size}px;height:${size}px;border-radius:${r}px;background:${color}22;border:1px solid ${color}44;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:${ds}px;height:${ds}px;border-radius:50%;background:${color};box-shadow:0 0 8px ${color}"></div></div>`;
+}
+
+function logoEl(name,color,size=32){
+  const src=LOGOS[name];
+  const r=Math.round(size/3);
+  const pad=Math.round(size*.1);
+  if(src)return`<div style="width:${size}px;height:${size}px;border-radius:${r}px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:${pad}px"><img src="${src}" style="width:100%;height:100%;object-fit:contain"></div>`;
+  const ds=Math.round(size*.32);
+  return`<div style="width:${size}px;height:${size}px;border-radius:${r}px;background:${color}22;border:1px solid ${color}44;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:${ds}px;height:${ds}px;border-radius:50%;background:${color};box-shadow:0 0 8px ${color}"></div></div>`;
+}
+
+function sc(s){if(!s)return CLR.accent;if(s.includes('4')||s.includes('קוד'))return CLR.amber;if(s.includes('3'))return CLR.purple;if(s.includes('2'))return CLR.pink;if(s.includes('1')||s.includes('אפיון'))return CLR.green;if(s.includes('פעיל')||s.includes('חי'))return CLR.blue;return CLR.accent;}
+function sp(s){if(!s)return 10;if(s.includes('4'))return 70;if(s.includes('3'))return 55;if(s.includes('2'))return 35;if(s.includes('1')||s.includes('אפיון'))return 20;if(s.includes('פעיל')||s.includes('חי'))return 85;return 30;}
+function du(d){return d?Math.ceil((new Date(d)-new Date())/86400000):null}
+function fa(a,c){if(!a)return'';return '₪'+Math.round(toILS(a,c)).toLocaleString('he-IL');}
+function dots(p,c){return Array.from({length:5},(_,i)=>`<div class="prog-seg" style="background:${i<Math.round(p/20)?c:'rgba(255,255,255,.1)'};${i<Math.round(p/20)?`box-shadow:0 0 6px ${c}`:''}" ></div>`).join('')}
+function fmtDate(d){if(!d)return'לא ידוע';const dt=new Date(d);return dt.toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'})}
+
+// ── EXCHANGE RATE ───────────────────────────────────
+let USD_RATE = 2.97; // ברירת מחדל - מתעדכן אוטומטית
+
+async function fetchRate() {
+  try {
+    // API בנק ישראל - שער יציג
+    const r = await fetch('https://edge.boi.gov.il/FusionEdgeServer/sdmx/v2/data/dataflow/BOI.STATISTICS/EXR/1.0/RER_USD_ILS?startperiod=2026-01-01&format=csv');
+    const txt = await r.text();
+    const lines = txt.trim().split('\n');
+    const last = lines[lines.length-1].split(',');
+    const rate = parseFloat(last[last.length-1]);
+    if (rate > 2 && rate < 6) { USD_RATE = rate; console.log('Rate:', rate); }
+  } catch(e) {
+    console.log('Using default rate:', USD_RATE);
+  }
+}
+
+function toILS(amount, currency) {
+  if (!amount) return 0;
+  const n = parseFloat(amount);
+  return currency === 'ILS' ? n : n * USD_RATE;
+}
+
+function fmtILS(amount, currency) {
+  if (!amount) return '';
+  return '₪' + Math.round(toILS(amount, currency)).toLocaleString('he-IL');
+}
+
+async function sbFetch(t,s='*',f=''){
+  try{
+    const r=await fetch(`${SB}/rest/v1/${t}?select=${s}${f}`,{
+      method:'GET',
+      headers:{
+        'apikey':KEY,
+        'Authorization':`Bearer ${KEY}`,
+        'Content-Type':'application/json',
+        'Accept':'application/json',
+      },
+      mode:'cors',
+    });
+    if(!r.ok){console.error('SB error:',r.status,r.statusText);return[]}
+    return r.json()
+  }
+  catch(e){console.error('SB fetch error:',e);return[]}
+}
+
+let D={p:[],s:[],d:[]};
+
+async function loadAll(){
+  try{
+    await fetchRate();
+  const[p,s,d]=await Promise.all([
+    sbFetch('hq_projects','id,name,stage,stage_detail,artifacts'),
+    sbFetch('hq_subscriptions','name,amount,currency,status,next_charge'),
+    sbFetch('hq_documents','id,vendor,amount,currency,status,flagged,doc_date,category,subject,manage_url'),
+  ]);
+  D={p,s,d};
+  console.log('Data loaded:',p.length,'projects',s.length,'subs',d.length,'docs');
+  showToast(`✓ נטענו: ${p.length} פרויקטים, ${s.length} מנויים, ${d.length} מסמכים`);
+  rHome();rProjects();rFinance();rDocs('all');
+  }catch(e){console.error('loadAll error:',e);showToast('שגיאה בטעינה: '+e.message);}
+}
+
+// ── MODALS ──────────────────────────────────────────
+function openModal(id){document.getElementById('modal-'+id).classList.add('open')}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open')}
+
+function showProject(p){
+  const c=sc(p.stage_detail||p.stage);
+  const pr=sp(p.stage_detail||p.stage);
+  const arts=(p.artifacts||[]);
+  const ico=PROJ_ICON[p.name]||'📁';
+  document.getElementById('modal-project-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;direction:rtl">
+      <div style="width:40px;height:40px;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.6)" onclick="closeModal('project')">✕</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:28px">${ico}</span>
+        <span style="font-size:22px;font-weight:800;color:white">${p.name}</span>
+      </div>
+    </div>
+    <div class="tag" style="background:${c}22;color:${c};border:1px solid ${c}44;margin-bottom:16px">${(p.stage_detail||p.stage||'').split(' - ').pop()}</div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:8px;text-align:right">התקדמות</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;direction:rtl">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">${pr}%</span>
+        <div style="display:flex;gap:4px">${dots(pr,c)}</div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pr}%;background:linear-gradient(90deg,${c}88,${c});border-radius:4px;box-shadow:0 0 12px ${c}66"></div>
+      </div>
+    </div>
+    ${arts.length?`
+    <div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:12px;text-align:right">📦 תוצרים (${arts.length})</div>
+      ${arts.map(a=>`
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;margin-bottom:10px;direction:rtl">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div class="tag" style="background:${c}18;color:${c};border:1px solid ${c}33">${a.kind||'doc'}</div>
+          <span style="font-size:13px;font-weight:600;color:white">${a.title}</span>
+        </div>
+        ${a.note?`<div style="font-size:11px;color:rgba(255,255,255,.45);text-align:right;margin-bottom:8px">${a.note}</div>`:''}<br>
+        ${a.url?`<a href="${a.url}" target="_blank" style="display:inline-block;background:${c}22;color:${c};border:1px solid ${c}44;font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;text-decoration:none">פתח קישור ←</a>`:'<span style="font-size:10px;color:rgba(255,255,255,.25)">אין קישור</span>'}
+      </div>`).join('')}
+    </div>`:'<div style="text-align:center;padding:20px;color:rgba(255,255,255,.25);font-size:13px">אין תוצרים עדיין</div>'}
+  `;
+  openModal('project');
+}
+
+function showSub(s,color){
+  const days=du(s.next_charge);
+  const urg=days<=5?CLR.accent:days<=14?CLR.amber:CLR.green;
+  document.getElementById('modal-sub-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;direction:rtl">
+      <div style="width:40px;height:40px;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.6)" onclick="closeModal('sub')">✕</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        ${logoEl(s.name,color,40)}
+        <span style="font-size:22px;font-weight:800;color:white">${s.name}</span>
+      </div>
+    </div>
+    <div style="background:${color}15;border:1px solid ${color}30;border-radius:20px;padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-size:40px;font-weight:900;color:${color};text-shadow:0 0 30px ${color}66">${fa(s.amount,s.currency)}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:6px">לחודש</div>
+    </div>
+    <div class="detail-row">
+      <span style="font-size:14px;font-weight:600;color:white">${fmtDate(s.next_charge)}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">תאריך חיוב</span>
+    </div>
+    <div class="detail-row">
+      <span style="font-size:14px;font-weight:600;color:${urg}">בעוד ${days} ימים</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">זמן לחיוב</span>
+    </div>
+    <div class="detail-row">
+      <span style="font-size:14px;font-weight:600;color:white">${s.currency==='ILS'?'שקל ישראלי':'דולר אמריקאי'}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">מטבע</span>
+    </div>
+    <div class="detail-row">
+      <span class="tag" style="background:${CLR.green}22;color:${CLR.green};border:1px solid ${CLR.green}44">${s.status==='active'?'פעיל':'לא פעיל'}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">סטטוס</span>
+    </div>
+  `;
+  openModal('sub');
+}
+
+function showDoc(d){
+  const fc=d.flagged?CLR.accent:d.status==='new'?CLR.amber:CLR.green;
+  const fl=d.flagged?'ממתין לבדיקה':d.status==='new'?'חדש':'טופל';
+  document.getElementById('modal-doc-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;direction:rtl">
+      <div style="width:40px;height:40px;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.6)" onclick="closeModal('doc')">✕</div>
+      <div style="text-align:right">
+        <div style="font-size:20px;font-weight:800;color:white">${d.vendor||'לא ידוע'}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">${d.category||''}</div>
+      </div>
+    </div>
+    <div class="tag" style="background:${fc}22;color:${fc};border:1px solid ${fc}44;margin-bottom:16px">${fl}</div>
+    ${d.amount?`
+    <div style="background:${fc}15;border:1px solid ${fc}30;border-radius:20px;padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-size:40px;font-weight:900;color:${fc};text-shadow:0 0 30px ${fc}66">${fa(d.amount,d.currency)}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:6px">סכום</div>
+    </div>`:`
+    <div style="background:rgba(237,91,51,.1);border:1px solid rgba(237,91,51,.3);border-radius:16px;padding:14px;margin-bottom:16px;text-align:center;direction:rtl">
+      <div style="font-size:13px;color:#ED5B33;font-weight:600">⚠️ חסר סכום - יש לעדכן ידנית</div>
+    </div>`}
+    <div class="detail-row">
+      <span style="font-size:14px;font-weight:600;color:white">${fmtDate(d.doc_date)}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.4)">תאריך מסמך</span>
+    </div>
+    ${d.subject?`<div class="detail-row"><span style="font-size:12px;color:rgba(255,255,255,.6);max-width:60%;text-align:left">${d.subject}</span><span style="font-size:12px;color:rgba(255,255,255,.4)">נושא</span></div>`:''}
+    ${d.manage_url?`
+    <div style="margin-top:20px">
+      <a href="${d.manage_url}" target="_blank" style="display:block;background:rgba(59,114,247,.2);color:#3B72F7;border:1px solid rgba(59,114,247,.4);font-size:13px;font-weight:700;padding:14px;border-radius:16px;text-decoration:none;text-align:center">פתח קובץ בדרייב ←</a>
+    </div>`:'<div style="margin-top:16px;text-align:center;font-size:11px;color:rgba(255,255,255,.2)">אין קישור לקובץ</div>'}
+  `;
+  openModal('doc');
+}
+
+// ── RENDER HOME ─────────────────────────────────────
+function rHome(){
+  const{p,s,d}=D;
+  const act=s.filter(x=>x.status==='active');
+  const flg=d.filter(x=>x.flagged);
+  document.getElementById('hs-p').textContent=p.length;
+  document.getElementById('hs-s').textContent=act.length;
+  document.getElementById('hs-d').textContent=d.length;
+  document.getElementById('h-pt').textContent=flg.length?`${flg.length} פעולות מחכות היום`:'הכל תקין ✓';
+  document.getElementById('h-ps').textContent=flg.slice(0,2).map(x=>x.vendor).join(' · ')||'אין פעולות פתוחות';
+  const h=new Date().getHours();
+  document.getElementById('greeting').textContent=h<12?'בוקר טוב, מתניה 👋':'אחה"צ טוב, מתניה 👋';
+
+  document.getElementById('h-projs').innerHTML=p.slice(0,2).map((x,i)=>{
+    const c=sc(x.stage_detail||x.stage),pr=sp(x.stage_detail||x.stage);
+    const lbl=(x.stage_detail||x.stage||'').split(' - ').pop();
+    const ico=PROJ_ICON[x.name]||'📁';
+    return`<div class="glass tappable" style="padding:16px 18px;margin-bottom:10px;animation:fadeUp .5s ${.25+i*.1}s both" onclick="showProject(${JSON.stringify(x).replace(/'/g,\"'\")} )">
+      <div style="position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:${c}33;filter:blur(25px);pointer-events:none"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="tag" style="background:${c}22;color:${c};border:1px solid ${c}44">${lbl}</div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">${ico}</span><span style="font-size:17px;font-weight:800;color:rgba(255,255,255,.95)">${x.name}</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:3px">${dots(pr,c)}</div>
+        <span style="font-size:10px;color:rgba(255,255,255,.4)">${pr}%</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const nb=act.sort((a,b)=>new Date(a.next_charge)-new Date(b.next_charge))[0];
+  if(nb){
+    const days=du(nb.next_charge);
+    const urg=days<=5?CLR.accent:days<=14?CLR.amber:CLR.blue;
+    const idx=act.indexOf(nb);
+    const c=PAL[idx%PAL.length];
+    document.getElementById('h-bill').innerHTML=`
+    <div class="glass-sm tappable" style="padding:14px 16px;direction:rtl;display:flex;align-items:center;gap:12px" onclick="showSub(${JSON.stringify(nb)},'${c}')">
+      ${logoEl(nb.name,c,36)}
+      <div style="flex:1;text-align:right">
+        <div style="font-size:14px;font-weight:700;color:white">${nb.name}</div>
+        <div style="font-size:11px;color:${urg};margin-top:2px">בעוד ${days} ימים · ${nb.next_charge}</div>
+      </div>
+      <div style="font-size:22px;font-weight:900;color:${urg};text-shadow:0 0 12px ${urg}">${fa(nb.amount,nb.currency)}</div>
+    </div>`;
+  }
+}
+
+// ── RENDER PROJECTS ─────────────────────────────────
+function rProjects(){
+  const{p}=D;
+  document.getElementById('pc').textContent=`${p.length} פרויקטים פעילים`;
+  document.getElementById('p-list').innerHTML=p.map((x,i)=>{
+    const c=sc(x.stage_detail||x.stage),pr=sp(x.stage_detail||x.stage);
+    const lbl=(x.stage_detail||x.stage||'').split(' - ').pop();
+    const ico=PROJ_ICON[x.name]||'📁';
+    const arts=(x.artifacts||[]);
+    return`<div class="glass tappable" style="margin:0 20px 12px;padding:20px;animation:slideIn .5s ${.08*i}s both" onclick="showProject(${JSON.stringify(x).replace(/'/g,\"'\")})">
+      <div style="position:absolute;bottom:-20px;left:-20px;width:100px;height:100px;border-radius:50%;background:${c}33;filter:blur(30px);pointer-events:none"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;direction:rtl">
+        <div class="tag" style="background:${c}22;color:${c};border:1px solid ${c}44">${lbl}</div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:26px">${ico}</span><span style="font-size:20px;font-weight:800;color:white">${x.name}</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;direction:rtl">
+        <div style="display:flex;gap:3px">${dots(pr,c)}</div>
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">${pr}%</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.35);text-align:right">📦 ${arts.length} תוצרים · לחץ לפרטים</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER FINANCE ───────────────────────────────────
+function rFinance(){
+  const{s}=D;
+  const act=s.filter(x=>x.status==='active');
+  const totalILS=act.reduce((sum,x)=>sum+toILS(x.amount,x.currency),0);
+  document.getElementById('f-usd').textContent=`שער דולר: ₪${USD_RATE.toFixed(2)}`;
+  document.getElementById('f-ils').textContent=``;
+  document.getElementById('ft').textContent=`${act.length} מנויים · סה"כ ₪${Math.round(totalILS).toLocaleString('he-IL')} / חודש`;
+  document.getElementById('f-usd').textContent=`סה"כ חודשי`;
+
+  const svg=document.getElementById('donut');
+  const legend=document.getElementById('donut-legend');
+  const r=44,cx=55,cy=55,circ=2*Math.PI*r;
+  let off=0;
+  const usd_grp=act.filter(x=>x.currency==='USD').reduce((s,x)=>s+toILS(x.amount,x.currency),0);
+  const ils_grp=act.filter(x=>x.currency==='ILS').reduce((s,x)=>s+parseFloat(x.amount||0),0);
+  const groups=[{label:'מנויי דולר (בשקלים)',val:usd_grp,color:CLR.amber},{label:'מנויי שקל',val:ils_grp,color:CLR.blue}];
+  const total=groups.reduce((s,g)=>s+g.val,0)||1;
+  svg.innerHTML='<circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="14"/>';
+  groups.forEach((g,i)=>{
+    const pct=g.val/total,dash=circ*pct;
+    const el=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    el.setAttribute('cx',cx);el.setAttribute('cy',cy);el.setAttribute('r',r);
+    el.setAttribute('fill','none');el.setAttribute('stroke',g.color);el.setAttribute('stroke-width','14');
+    el.setAttribute('stroke-dasharray',`${dash} ${circ-dash}`);
+    el.setAttribute('stroke-dashoffset',-off);el.setAttribute('stroke-linecap','round');
+    el.style.cssText=`--full:${circ};--offset:${circ-dash};animation:drawArc .8s ${.2+i*.3}s cubic-bezier(.34,1.56,.64,1) both`;
+    svg.appendChild(el);off+=dash;
+  });
+  legend.innerHTML=groups.map(g=>`<div style="display:flex;align-items:center;gap:8px;direction:rtl"><div style="width:8px;height:8px;border-radius:50%;background:${g.color};box-shadow:0 0 6px ${g.color}"></div><span style="font-size:11px;color:rgba(255,255,255,.6)">${g.label}</span><span style="font-size:12px;font-weight:700;color:white;margin-right:auto">₪${Math.round(g.val)}</span></div>`).join('');
+
+  const sorted=act.sort((a,b)=>new Date(a.next_charge)-new Date(b.next_charge)).slice(0,5);
+  const maxDays=Math.max(...sorted.map(x=>du(x.next_charge)||0),30);
+  document.getElementById('bar-chart').innerHTML=sorted.map((x,i)=>{
+    const days=du(x.next_charge)||0;
+    const h=Math.max(6,Math.round((days/maxDays)*56));
+    const c=days<=5?CLR.accent:days<=14?CLR.amber:CLR.blue;
+    return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px"><span style="font-size:8px;color:${c};font-weight:700">${days}י</span><div style="width:100%;height:${h}px;background:${c};border-radius:4px 4px 2px 2px;box-shadow:0 0 8px ${c}44;transform-origin:bottom;animation:barRise .6s ${.1+i*.1}s cubic-bezier(.34,1.56,.64,1) both"></div></div>`;
+  }).join('');
+  document.getElementById('bar-labels').innerHTML=sorted.map(x=>`<div style="flex:1;text-align:center;font-size:8px;color:rgba(255,255,255,.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.name}</div>`).join('');
+
+  document.getElementById('f-list').innerHTML=act.map((x,i)=>{
+    const c=PAL[i%PAL.length],days=du(x.next_charge);
+    const urg=days<=5?CLR.accent:days<=14?CLR.amber:'rgba(255,255,255,.4)';
+    return`<div class="tappable" style="margin:0 20px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 16px;display:flex;align-items:center;direction:rtl;animation:fadeUp .4s ${.1+i*.07}s both" onclick="showSub(${JSON.stringify(x)},'${c}')">
+      ${logoEl(x.name,c,32)}
+      <div style="flex:1;text-align:right;margin-right:12px">
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.9)">${x.name}</div>
+        <div style="font-size:10px;color:${urg};margin-top:2px">${x.next_charge}${days!==null?` · בעוד ${days} ימים`:''}</div>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:${c};text-shadow:0 0 10px ${c}">${fa(x.amount,x.currency)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER DOCS ──────────────────────────────────────
+let dFilter='all';
+function fDocs(f){
+  dFilter=f;
+  ['all','flag','new'].forEach(id=>{
+    const el=document.getElementById('tf-'+id);
+    if(id===f){el.style.background='rgba(237,91,51,.2)';el.style.color='#ED5B33';el.style.border='1px solid rgba(237,91,51,.4)'}
+    else{el.style.background='rgba(255,255,255,.06)';el.style.color='rgba(255,255,255,.4)';el.style.border='1px solid rgba(255,255,255,.1)'}
+  });
+  rDocs(f);
+}
+function rDocs(f){
+  let list=D.d;
+  if(f==='flag')list=D.d.filter(x=>x.flagged);
+  if(f==='new')list=D.d.filter(x=>x.status==='new');
+  document.getElementById('dc').textContent=`${list.length} מסמכים`;
+  const c=document.getElementById('d-timeline');
+  if(!list.length){c.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.25);font-size:13px">אין מסמכים</div>';return}
+  c.innerHTML=`<div style="position:absolute;right:34px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,rgba(237,91,51,.4),rgba(59,114,247,.2),transparent)"></div>`+
+  list.map((x,i)=>{
+    const fc=x.flagged?CLR.accent:x.status==='new'?CLR.amber:CLR.green;
+    const fl=x.flagged?'ממתין':x.status==='new'?'חדש':'טופל';
+    return`<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;animation:slideIn .4s ${.05+i*.05}s both;direction:rtl">
+      <div class="tappable" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px" onclick="showDoc(${JSON.stringify(x)})">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div class="tag" style="background:${fc}22;color:${fc};border:1px solid ${fc}44">${fl}</div>
+          <span style="font-size:14px;font-weight:700;color:rgba(255,255,255,.9)">${x.vendor||'לא ידוע'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:rgba(255,255,255,.35)">${x.doc_date||''}</span>
+          <span style="font-size:13px;font-weight:600;color:${x.amount?'white':'rgba(255,255,255,.25)'}">${x.amount?fa(x.amount,x.currency):'חסר סכום'}</span>
+        </div>
+        ${x.category?`<div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:6px;text-align:right">${x.category}</div>`:''}
+        <div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;text-align:right">לחץ לפרטים ←</div>
+      </div>
+      <div style="width:14px;height:14px;border-radius:50%;background:${fc};box-shadow:0 0 10px ${fc};flex-shrink:0;margin-top:16px;border:2px solid rgba(0,0,0,.4)"></div>
+    </div>`;
+  }).join('');
+}
+
+// ── NAV ──────────────────────────────────────────────
+const WM={home:'מ',projects:'פ',finance:'כ',docs:'ס'};
+function goTo(id){
+  ['home','projects','finance','docs'].forEach(s=>{
+    document.getElementById('s-'+s).classList.remove('active');
+    const b=document.getElementById('nb-'+s);
+    const p=document.getElementById('np-'+s);
+    if(p)p.remove();
+    b.querySelectorAll('span').forEach(sp=>{sp.style.color='rgba(255,255,255,.4)';sp.style.fontWeight='400';sp.style.filter='none'});
+  });
+  document.getElementById('s-'+id).classList.add('active');
+  document.getElementById('s-'+id).scrollTop=0;
+  document.getElementById('wm').textContent=WM[id]||'מ';
+  const btn=document.getElementById('nb-'+id);
+  const pill=document.createElement('div');
+  pill.id='np-'+id;
+  pill.style.cssText='position:absolute;top:0;width:56px;height:30px;background:rgba(237,91,51,.2);border:1px solid rgba(237,91,51,.35);border-radius:15px;backdrop-filter:blur(8px);box-shadow:0 0 20px rgba(237,91,51,.3)';
+  btn.prepend(pill);
+  const sp=btn.querySelectorAll('span');
+  sp[0].style.color='#ED5B33';sp[0].style.filter='drop-shadow(0 0 6px rgba(237,91,51,.8))';
+  sp[1].style.color='#ED5B33';sp[1].style.fontWeight='700';
+}
+
+// ── CLOCK ────────────────────────────────────────────
+function tick(){const n=new Date();document.getElementById('clock').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
+tick();setInterval(tick,30000);
+
+// ── PARTICLES ────────────────────────────────────────
+const pc=document.getElementById('particles');
+for(let i=0;i<14;i++){
+  const d=document.createElement('div');
+  const cl=[CLR.accent,CLR.amber,CLR.blue,CLR.purple][i%4];
+  const sz=1.5+Math.random()*3;
+  d.style.cssText=`position:absolute;left:${8+Math.random()*84}%;bottom:${Math.random()*35}%;width:${sz}px;height:${sz}px;border-radius:50%;background:${cl};box-shadow:0 0 ${sz*4}px ${cl};animation:particle ${4+Math.random()*7}s ${Math.random()*6}s ease-in infinite;opacity:0`;
+  pc.appendChild(d);
+}
+
+// ── PARALLAX ────────────────────────────────────────
+document.getElementById('phone').addEventListener('mousemove',e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-r.left)/r.width)*100;
+  document.getElementById('b1').style.left=`${-10+x*.12}%`;
+  document.getElementById('b4').style.right=`${5+x*.06}%`;
+});
+
+// ── INTRO ────────────────────────────────────────────
+
+loadAll();
+setInterval(loadAll,60000);
+</script>
+</body>
+</html>
