@@ -307,15 +307,12 @@ let USD_RATE = 2.97; // ברירת מחדל - מתעדכן אוטומטית
 
 async function fetchRate() {
   try {
-    // API בנק ישראל - שער יציג
-    const r = await fetch('https://edge.boi.gov.il/FusionEdgeServer/sdmx/v2/data/dataflow/BOI.STATISTICS/EXR/1.0/RER_USD_ILS?startperiod=2026-01-01&format=csv');
-    const txt = await r.text();
-    const lines = txt.trim().split('\n');
-    const last = lines[lines.length-1].split(',');
-    const rate = parseFloat(last[last.length-1]);
-    if (rate > 2 && rate < 6) { USD_RATE = rate; console.log('Rate:', rate); }
+    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=ILS');
+    const d = await r.json();
+    const rate = d?.rates?.ILS;
+    if (rate > 2 && rate < 6) { USD_RATE = rate; }
   } catch(e) {
-    console.log('Using default rate:', USD_RATE);
+    USD_RATE = 3.65;
   }
 }
 
@@ -351,8 +348,8 @@ async function sbFetch(t,s='*',f=''){
 let D={p:[],s:[],d:[]};
 
 async function loadAll(){
+  await fetchRate();
   try{
-    await fetchRate();
   const[p,s,d]=await Promise.all([
     sbFetch('hq_projects','id,name,stage,stage_detail,artifacts'),
     sbFetch('hq_subscriptions','name,amount,currency,status,next_charge'),
